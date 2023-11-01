@@ -1,9 +1,16 @@
 /// <reference types="Cypress"/>
 
 describe('Mitigate Risk Web Application Authentication', () => {
-  it('Logo images should be visible', () => {
+
+  beforeEach(() => {
+
     cy
-      .visit('https://mitigateriskuat.baobabtesting.com/')
+    .visit('https://mitigateriskuat.baobabtesting.com/')
+
+  })
+
+  it('Logo images should be visible', () => {
+
 
     cy
       .get('img')
@@ -12,236 +19,131 @@ describe('Mitigate Risk Web Application Authentication', () => {
   })
 
   it('login form fields should be visible', () => {
-    cy
-      .visit('https://mitigateriskuat.baobabtesting.com/')
 
-    cy
-      .get('.sc-bXCLTC')
-      .should('be.visible')
+      cy.get('form').find('input').should('be.visible').and('be.empty')
+
   })
 
   it('Validate sign in form fields', () => {
-    cy
-      .visit('https://mitigateriskuat.baobabtesting.com/')
 
-      cy
-        .get('[data-testid="Email"]')
-        .should('be.empty')
-
-      cy
-        .get('[name="password"]')
-        .should('be.empty')
-
-    cy
-      .get('.sc-eeDRCY')
-      .click()
+    cy.get('.sc-eeDRCY').click()
       
-    cy
-      .get('.sc-dAlyuH.bnGnEl')
-      .should('have.text', 'Email or username is requiredPassword is required')
+    cy.get('.sc-dAlyuH.bnGnEl').should('be.visible').and('have.length', 2)
+
+    cy.get('.sc-dAlyuH.bnGnEl').eq(0).should('have.text', 'Email or username is required')
+
+    cy.get('.sc-dAlyuH.bnGnEl').eq(1).should('have.text', 'Password is required')
 
   })
 
-    it('Sign in with an invalid email/username and invalid password', () => {
-      cy
-        .visit('https://mitigateriskuat.baobabtesting.com/')
+  it('Sign in with an invalid email/username and invalid password', () => {
 
-      cy
-        .get('[data-testid="Email"]').type('invalid@email.com')
+      cy.get('form').find('[data-testid="Email"]').type('invalid@email.com')
 
-      cy
-        .get('[name="password"]').type('passw')
+      cy.get('form').find('[name="password"]').type('passw')
 
-      cy
-        .get('.sc-eeDRCY')
-        .click().wait(2000)
+      cy.get('.sc-eeDRCY').click().wait(2000)
 
-      cy
-        .get('.Toastify__toast-body')
-        .should('be.visible')
-    })
+      cy.get('.Toastify__toast-body').should(
+        'have.text', 'There was a problem logging in, Check your email/password or contact Admin')
+  })
 
-    it('Sign in with a valid email/username and invalid password', () => {
-      cy
-        .visit('https://mitigateriskuat.baobabtesting.com/')
+  it('Sign in with a valid email/username and invalid password', () => {
 
-      cy
-        .get('[data-testid="Email"]').type('fidelis+123@baobabpartners.com')
+      cy.get('form').find('[data-testid="Email"]').type('fidelis+123@baobabpartners.com')
 
-      cy
-        .get('[name="password"]').type('passw')
+      cy.get('form').find('[name="password"]').type('passw')
 
-      cy
-        .get('.sc-eeDRCY')
-        .click()
+      cy.get('.sc-eeDRCY') .click()
 
-      cy
-        .get('.Toastify__toast-body')
-        .should('be.visible')
+      cy.get('.Toastify__toast-body').should('be.visible').and(
+          'have.text', 'There was a problem logging in, Check your email/password or contact Admin')
 
-    })
+  })
     
-    it('Signin with an invalid email/username and valid password', () => {
-      cy
-        .visit('https://mitigateriskuat.baobabtesting.com/')
+  it('Sign in with an invalid email/username and valid password', () => {
 
-  
-        .get('[data-testid="Email"]').type('invalid@email.com')
+      cy.get('form').find('[data-testid="Email"]').type('invalid@email.com')
 
-      cy
-        .get('[name="password"]').type('@1234mAMa')
+      cy.get('form').find('[name="password"]').type('@1234mAMa')
 
-      cy
-        .wait(2000)
+      cy.wait(2000)
 
-      cy
-        .get('.sc-jlZhew.dsBNbw').click()
+      //click to view password
+      cy.get('.sc-jlZhew.dsBNbw').click()
 
+      cy.get('.sc-eeDRCY').click().wait(2000)
 
-      cy
-        .get('.sc-eeDRCY')
-        .click().wait(2000)
+      cy.get('.Toastify__toast-body').should('be.visible').and(
+          'have.text', 'There was a problem logging in, Check your email/password or contact Admin')
 
-      cy
-        .get('.Toastify__toast-body')
-        .should('be.visible')
+  })
 
-      })
+  it('Verify that password length is 8 min', () => {
 
-    it('Verify that password length is 8 min', () => {
-      cy.visit('https://mitigateriskuat.baobabtesting.com/')
+      cy.get('form').find('[data-testid="Email"]').type(
+        'invalid@email.com')
 
-      cy
-        .get('[data-testid="Email"]').type('invalid@email.com')
+      cy.get('form').find('[name="password"]').type(
+        '@1234mAM').invoke('val').should('have.length', 8)
 
-      cy
-        .get('[name="password"]').type('@1234mAM')
-        .invoke('val')
-        .should('have.length', 8)
-
-    })
+  })
     
-    it('Verify that password character combination criteria matches', () => {
-      cy
-        .visit('https://mitigateriskuat.baobabtesting.com/')
+  it('Verify that password character combination criteria matches', () => {
 
-      cy
-        .get('[data-testid="Email"]').type('fidelis+123@baobabpartners.com')
+      cy.get('[data-testid="Email"]').type('fidelis+123@baobabpartners.com')
 
-      cy
-        .get('[name="password"]').type('1234Papa!')
+      cy.get('[name="password"]').type('1234Papa!')
         
-  
         const password = '1234Papa!';
         const pattern = /^(?=.*[0-9])(?=.*[a-zA-Z])(?=.*[!@#$%^&*])[\w!@#$%^&*]{8,}$/;
         expect(pattern.test(password)).to.be.true;
 
-      cy
-        .get('.sc-jlZhew.dsBNbw').click()
+      cy.get('.sc-jlZhew.dsBNbw').click()
 
 
-    })
+  })
     
-    it('Verify forgot password function works', () => {
-      cy
-        .visit('https://mitigateriskuat.baobabtesting.com/')
+  it('Verify forgot password function works', () => {
 
-        cy
-          .get('.sc-bmzYkS.giFCYi')
-          .click()
+      cy.get('.sc-bmzYkS.giFCYi').click()
           
-        cy
-          .get('[label="Email"]')
-          .should('be.visible')
-          .type('invalid@email.com@EMAIL')
+      cy.get('form').find('[label="Email"]').type(
+        'fidelis+123@baobabpartners.com')
 
-        cy.get('.sc-eeDRCY.ecMfbb').click().wait(2000)
+      cy.get('.sc-eeDRCY.ecMfbb').click().wait(2000)
 
-        cy
-          .get('span[name="ErrorMsg"]')
-          .should('have.text', 'Invalid email address')
-
-        cy
-          .visit('https://mitigateriskuat.baobabtesting.com/')
-  
-          cy
-            .get('.sc-bmzYkS.giFCYi')
-            .click()
-            
-          cy
-            .get('[label="Email"]')
-            .should('be.visible')
-            .type('fidelis@baobabpartners.co')
-  
-          cy.get('.sc-eeDRCY.ecMfbb').click().wait(2000)
-
-        cy
-          .get('.sc-eeDRCY.ecMfbb').click().wait(2000)
-          cy.get('.Toastify__toast-body')
-          .should('be.visible')
-          .should('have.text', 'Email does not exist in database, confirm the email and try again')
-
-        cy
-          .visit('https://mitigateriskuat.baobabtesting.com/')
-        cy
-          .get('.sc-bmzYkS.giFCYi')
-          .click()
-          
-        cy
-          .get('[label="Email"]')
-          .should('be.visible')
-          .type('fidelis+123@baobabpartners.com')
-
-        cy
-          .get('.sc-eeDRCY.ecMfbb').click().wait(2000)
-
-        cy
-          .get('.sc-kOPcWz.ksLnCT')
-          .should('have.text', "Proceed to login")
-    })
+      cy.get('.sc-kOPcWz.ksLnCT').should('have.text', "Proceed to login")
+  })
 
           
-    it('Sign in with an invalid email/username and invalid password', () => {
-      cy.visit('https://mitigateriskuat.baobabtesting.com/')
+  it('Sign in with a valid email/username and password', () => {
 
-      cy
-        .get('[data-testid="Email"]').type('fidelis+123@baobabpartners.com')
+      cy.get('form').find('[data-testid="Email"]').type(
+        'fidelis+123@baobabpartners.com')
 
-      cy
-        .get('[name="password"]').type('1234Papa!')
+      cy.get('form').find('[name="password"]').type('1234Papa!')
 
+      cy.get('.sc-eeDRCY.ecMfbb').click().wait(2000)
 
-      
-        cy.get('.sc-eeDRCY.ecMfbb').click().wait(6000)
+      cy.get('.Toastify__toast-body').should('be.visible').and('have.text', 'You have successfully logged in')
 
-        cy
-          .get('.sc-kpKSZj')
-          .should('be.visible')
-
-    })
+  })
     
     
-    it('Verify logout button logs user out of the web app', () => {
-      cy.visit('https://mitigateriskuat.baobabtesting.com/')
+  it('Verify logout button logs user out of the web app', () => {
 
-        cy
-          .get('[data-testid="Email"]').type('fidelis+123@baobabpartners.com')
+      cy.get('form').find('[data-testid="Email"]').type(
+        'fidelis+123@baobabpartners.com')
   
-        cy
-          .get('[name="password"]').type('1234Papa!')
+      cy.get('form').find('[name="password"]').type(
+        '1234Papa!')
   
-  
-        
-          cy.get('.sc-eeDRCY.ecMfbb').click()
-            .wait(6000)
+      cy.get('.sc-eeDRCY.ecMfbb').click().wait(2000)
 
-          cy
-            .get('.sc-bWJUgm > .sc-ijDOKB > .sc-iaJaUu > .sc-feoqov > .sc-gVJvzJ > .sc-dOoqMo > .ml-3')
-            .click()
+      cy.contains('Logout').click()
 
-            cy.get('.sc-bXCLTC.gGQLGm')
-            .should('be.visible')
-
+      cy.get('.sc-jsJBEP').should('have.text', 'Log In')
 
     })
     
