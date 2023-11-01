@@ -1,0 +1,14 @@
+{
+  "name": "e2e-testing-mr-webapp",
+  "version": "1.0.0",
+  "description": "End-2-End testing of the Client \"Mitigate Risk\" Web Application. ",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Fidelis Agba (QA Engineer)",
+  "license": "ISC",
+  "devDependencies": {
+    "cypress": "^13.3.1"
+  }
+}
